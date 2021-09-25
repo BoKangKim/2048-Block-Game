@@ -2,6 +2,7 @@
 #include "SceneIngame.h"
 #include "Environment.h"
 
+
 Vec2 SceneIngame::convertGameCoordToBlockCoord(const Vec2& gameCoord)
 {
 	Vec2 blockOrigin = BLOCK_OFFSET
@@ -31,12 +32,26 @@ void SceneIngame::createBlock(int x, int y, int type)
 	//	,Rect(300,240,40,40)
 	//);
 	
-	blockSpr = Sprite::create("res/mainblock.jpg");
-	blockSpr->setScale(1.6);
-	blockSpr->setPosition(720/2, 1280/2);
+	blockSpr = Sprite::create("res/mainblock.png");
+	blockSpr->setScale(1.3);
+	//blockSpr->setPosition(720/2, 1280/2);
 	addChild(blockSpr);
-	setBlockData(x,y,type);
-	setBlockSprite(x,y,blockSpr);
+
+	twoblockSpr = Sprite::create("res/2.png");
+	twoblockSpr->setScale(0.98);
+	//twoblockSpr->setTexture("2");
+	addChild(twoblockSpr);
+
+	if (type == 0)
+	{
+		setBlockData(x, y, type);
+		setBlockSprite(x, y, blockSpr);
+	}
+	else
+	{
+		setBlockData(x,y,type);
+		setBlockSprite(x,y,twoblockSpr);
+	}
 }
 
 int SceneIngame::getBlockData(int x, int y)
@@ -63,8 +78,51 @@ void SceneIngame::destroyBlock(int x, int y)
 {
 	if (blockData[y][x] != 0)
 	{
-
+		blockSprite[y][x]->runAction(
+			Sequence::create(
+				FadeOut::create(0.125f),
+				RemoveSelf::create(),
+				nullptr
+			)
+		);
 	}
+	
+	this->runAction(Sequence::create(
+		CallFunc::create([=](){numBlockTomainBlock(x, y);}),
+		nullptr
+	));
+	
+}
+
+void SceneIngame::setStartRandomNum()
+{
+	randX1 = rand() % BLOCK_HORIZONTAL;
+	randY1 = rand() % BLOCK_VERTICAL;
+	randX2 = rand() % BLOCK_HORIZONTAL;
+	randY2 = rand() % BLOCK_VERTICAL;
+
+	if (randX1 == randX2 && randY1 == randY2)
+	{
+		while (true)
+		{
+			randX2 = rand() % BLOCK_HORIZONTAL;
+			randY2 = rand() % BLOCK_VERTICAL;
+			if (randX1 != randX2 || randY1 != randY2)
+				break;
+		}
+	}
+}
+
+void SceneIngame::movedBlocks(int x, int y)
+{
+
+}
+
+void SceneIngame::numBlockTomainBlock(int x, int y)
+{
+	blockSprite[y][x] = nullptr;
+	setBlockData(x, y, 0);
+	setBlockSprite(x,y,blockSpr);
 }
 
 SceneIngame* SceneIngame::create()
@@ -79,7 +137,14 @@ bool SceneIngame::init()
 {
 	if(!Scene::init()) return false;
 
-	
+	srand(time(0));
+	int count = 1;
+
+	for (int i = 0; i < 11; i++)
+	{
+		count = count * 2;
+		blockNumType[i] = count;
+	}
 
 	return true;
 }
@@ -99,11 +164,24 @@ void SceneIngame::initUI()
 
 void SceneIngame::initGame()
 {
+	setStartRandomNum();
+
 	for (int i = 0; i < BLOCK_HORIZONTAL; i++)
 	{
 		for (int k = 0; k < BLOCK_VERTICAL; k++)
 		{
-			createBlock(i,k,0);
+			if (i == randX1 && k == randY1)
+			{
+				createBlock(i, k, 1);
+			}
+			else if (i == randX2 && k == randY2)
+			{
+				createBlock(i, k, 1);
+			}
+			else
+			{
+				createBlock(i, k, 0);
+			}
 		}
 	}
 	this->alignBlockSprite();
@@ -122,8 +200,11 @@ bool SceneIngame::onTouchBegan(Touch* t, Event* e)
 	return false;
 }
 
-void SceneIngame::onTouchMoved(Touch* t, Event* e)
+bool SceneIngame::onTouchMoved(Touch* t, Event* e)
 {
+	Vec2 p = convertGameCoordToBlockCoord(t->getLocation());
+	
+	return false;
 }
 
 void SceneIngame::onTouchEnded(Touch* t, Event* e)

@@ -11,9 +11,16 @@ private:
 	int blockData[BLOCK_VERTICAL][BLOCK_HORIZONTAL];
 	Sprite* blockSprite[BLOCK_VERTICAL][BLOCK_HORIZONTAL];
 
-	Sprite* blockSpr = nullptr;
+	Sprite* blockSpr = nullptr; // 메인 블록
+	Sprite* twoblockSpr = nullptr; // 2블록
 
-	Vec2 convertGameCoordToBlockCoord(const Vec2& gameCoord);
+	int blockNumType[11]; // 블록 타입 11개
+	int randX1; // 시작 할 때 첫번째 2의 x 좌표
+	int randY1; // 시작 할 때 첫번째 2의 y 좌표
+	int randX2; // 시작 할 때 두번째 2의 x 좌표
+	int randY2; // 시작 할 때 두번째 2의 y 좌표
+
+	Vec2 convertGameCoordToBlockCoord(const Vec2& gameCoord); 
 	Vec2 convertBlockCoordToGameCoord(const Vec2& blockCoord);
 
 	void createBlock(int x,int y, int type);
@@ -22,9 +29,9 @@ private:
 	Sprite* getBlockSprite(int x,int y);
 	void setBlockSprite(int x, int y, Sprite* s);
 	void destroyBlock(int x,int y);
-	
-	//char blockType[12] = {"blue.png","dagray.png","gray.png", "green.png"
-	//,"lightblue.png","orange.png","pink.png","purple.png","red.png","red2.png","white.png"};
+	void setStartRandomNum(); //시작할 때 랜덤한 곳에 생성되는 2 두개 위치 초기화
+	void movedBlocks(int x,int y); // 드래그로 블록 이동
+	void numBlockTomainBlock(int x,int y); // 이동시킨 후 원래 2가 있던 위치를 메인 블록으로 바꾸는 함수
 
 public:
 	static SceneIngame* create();
@@ -37,7 +44,7 @@ public:
 	void destroyGame();
 
 	bool onTouchBegan(Touch* t, Event* e);
-	void onTouchMoved(Touch* t, Event* e);
+	bool onTouchMoved(Touch* t, Event* e);
 	void onTouchEnded(Touch* t, Event* e);
 
 	void alignBlockSprite();
