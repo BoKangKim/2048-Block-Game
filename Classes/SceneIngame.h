@@ -9,7 +9,12 @@ class SceneIngame : public Scene {
 private:
 	GameState state;
 	int blockData[BLOCK_VERTICAL][BLOCK_HORIZONTAL];
-	Sprite blockSprite[BLOCK_VERTICAL][BLOCK_HORIZONTAL];
+	Sprite* blockSprite[BLOCK_VERTICAL][BLOCK_HORIZONTAL];
+
+	Sprite* blockSpr = nullptr;
+
+	Vec2 convertGameCoordToBlockCoord(const Vec2& gameCoord);
+	Vec2 convertBlockCoordToGameCoord(const Vec2& blockCoord);
 
 	void createBlock(int x,int y, int type);
 	int getBlockData(int x,int y);
@@ -35,7 +40,7 @@ public:
 	void onTouchMoved(Touch* t, Event* e);
 	void onTouchEnded(Touch* t, Event* e);
 
-
+	void alignBlockSprite();
 };
 
 #endif // !__SCENEINGAME_H__
