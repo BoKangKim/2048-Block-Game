@@ -8,12 +8,15 @@
 class SceneIngame : public Scene {
 private:
 	GameState state;
+	MouseMove mousemove;
 	int blockData[BLOCK_VERTICAL][BLOCK_HORIZONTAL];
 	Sprite* blockSprite[BLOCK_VERTICAL][BLOCK_HORIZONTAL];
+	Vec2 mouseTouch;
 
 	Sprite* blockSpr = nullptr; // 메인 블록
 	Sprite* twoblockSpr = nullptr; // 2블록
 
+	void toDo();
 	int blockNumType[11]; // 블록 타입 11개
 	int randX1; // 시작 할 때 첫번째 2의 x 좌표
 	int randY1; // 시작 할 때 첫번째 2의 y 좌표
@@ -30,8 +33,11 @@ private:
 	void setBlockSprite(int x, int y, Sprite* s);
 	void destroyBlock(int x,int y);
 	void setStartRandomNum(); //시작할 때 랜덤한 곳에 생성되는 2 두개 위치 초기화
-	void movedBlocks(int x,int y); // 드래그로 블록 이동
+	void movedBlocks(); // 드래그로 블록 이동
 	void numBlockTomainBlock(int x,int y); // 이동시킨 후 원래 2가 있던 위치를 메인 블록으로 바꾸는 함수
+	bool MousePosition(Vec2 p); //마우스 이동 체크
+	int findEqualTypeBlockXIndex(int x,int y);
+	int findEqualTypeBlockYIndex(int x,int y);
 
 public:
 	static SceneIngame* create();

@@ -3,6 +3,13 @@
 #include "Environment.h"
 
 
+void SceneIngame::toDo()
+{
+	//마우스 위치 판단 후 블록 움직이기
+	//MoveTo 에러 잡기
+	//같은 블록 다른 블록 충돌 판단
+}
+
 Vec2 SceneIngame::convertGameCoordToBlockCoord(const Vec2& gameCoord)
 {
 	Vec2 blockOrigin = BLOCK_OFFSET
@@ -88,6 +95,7 @@ void SceneIngame::destroyBlock(int x, int y)
 	}
 	
 	this->runAction(Sequence::create(
+		DelayTime::create(0.625f),
 		CallFunc::create([=](){numBlockTomainBlock(x, y);}),
 		nullptr
 	));
@@ -113,9 +121,37 @@ void SceneIngame::setStartRandomNum()
 	}
 }
 
-void SceneIngame::movedBlocks(int x, int y)
+void SceneIngame::movedBlocks()
 {
 
+	if (mousemove == MouseMove::RIGHT)
+	{
+		mousemove = MouseMove::STOP;
+		for (int i = 0; i < BLOCK_HORIZONTAL; i++)
+		{
+			for (int k = 0; k < BLOCK_VERTICAL; k++)
+			{
+				if (blockData[k][i] != 0)
+				{
+					blockSprite[k][BLOCK_HORIZONTAL-1]->runAction(Sequence::create(
+						FadeOut::create(0.125f),
+						FadeIn::create(0.125f),
+						FadeOut::create(0.125f),
+						FadeIn::create(0.125f),
+						Spawn::create(ScaleTo::create(0.125f, 0.0), FadeOut::create(0.125f), nullptr),
+						RemoveSelf::create(),
+						nullptr
+					));
+					blockSprite[k][i]->runAction(Sequence::create(
+						DelayTime::create(0.125f),
+						MoveTo::create(0.125f, convertBlockCoordToGameCoord(Vec2(BLOCK_HORIZONTAL - 1, k))),
+						nullptr
+					));
+				}
+			}
+		}
+
+	}
 }
 
 void SceneIngame::numBlockTomainBlock(int x, int y)
@@ -124,6 +160,34 @@ void SceneIngame::numBlockTomainBlock(int x, int y)
 	setBlockData(x, y, 0);
 	setBlockSprite(x,y,blockSpr);
 }
+
+bool SceneIngame::MousePosition(Vec2 p)
+{
+	if(mouseTouch.x < p.x)
+		mousemove = MouseMove::RIGHT;
+	else if(mouseTouch.x > p.x)
+		mousemove = MouseMove::LEFT;
+	else if(mouseTouch.y < p.y)
+		mousemove = MouseMove::TOP;
+	else if(mouseTouch.y < p.y)
+		mousemove = MouseMove::BOTTOM;
+	else
+		mousemove = MouseMove::STOP;
+
+	return false;
+}
+
+int SceneIngame::findEqualTypeBlockXIndex(int x, int y)
+{
+	return 0;
+}
+
+int SceneIngame::findEqualTypeBlockYIndex(int x, int y)
+{
+	return 0;
+}
+
+
 
 SceneIngame* SceneIngame::create()
 {
@@ -139,12 +203,20 @@ bool SceneIngame::init()
 
 	srand(time(0));
 	int count = 1;
+	mousemove = MouseMove::STOP;
+
+	auto touch = EventListenerTouchOneByOne::create();
 
 	for (int i = 0; i < 11; i++)
 	{
 		count = count * 2;
 		blockNumType[i] = count;
 	}
+
+	touch->onTouchBegan = std::bind(&SceneIngame::onTouchBegan,this,std::placeholders::_1,std::placeholders::_2);
+	touch->onTouchMoved = std::bind(&SceneIngame::onTouchMoved,this,std::placeholders::_1,std::placeholders::_2);
+
+	getEventDispatcher()->addEventListenerWithSceneGraphPriority(touch, this);
 
 	return true;
 }
@@ -197,14 +269,25 @@ void SceneIngame::destroyGame()
 
 bool SceneIngame::onTouchBegan(Touch* t, Event* e)
 {
-	return false;
+	Vec2 p = convertGameCoordToBlockCoord(t->getLocation());
+
+	mouseTouch.x = p.x;
+	mouseTouch.y = p.y;
+
+	CCLOG("%f %f touch", mouseTouch.x, mouseTouch.y);
+	
+	return true;
 }
 
 bool SceneIngame::onTouchMoved(Touch* t, Event* e)
 {
 	Vec2 p = convertGameCoordToBlockCoord(t->getLocation());
 	
-	return false;
+	SceneIngame::MousePosition(p); 
+
+	SceneIngame::movedBlocks(); return true;
+
+	return true;
 }
 
 void SceneIngame::onTouchEnded(Touch* t, Event* e)

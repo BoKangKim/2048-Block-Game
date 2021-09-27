@@ -10,6 +10,14 @@ enum class GameState {
 	BLOCK_MOVING
 };
 
+enum class MouseMove {
+	LEFT,
+	RIGHT,
+	TOP,
+	BOTTOM,
+	STOP
+};
+
 // 블록의 기본 설정들
 #define BLOCK_HORIZONTAL 6
 #define BLOCK_VERTICAL 6
