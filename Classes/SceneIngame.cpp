@@ -123,6 +123,7 @@ void SceneIngame::setStartRandomNum()
 
 void SceneIngame::movedBlocks()
 {
+//	Vec2 chVec = Vec2(0,0);
 
 	if (mousemove == MouseMove::RIGHT)
 	{
@@ -133,32 +134,32 @@ void SceneIngame::movedBlocks()
 			{
 				if (blockData[k][i] != 0)
 				{
-					blockSprite[k][BLOCK_HORIZONTAL-1]->runAction(Sequence::create(
-						FadeOut::create(0.125f),
-						FadeIn::create(0.125f),
-						FadeOut::create(0.125f),
-						FadeIn::create(0.125f),
+					blockSprite[k][BLOCK_HORIZONTAL - 1]->runAction(Sequence::create(
 						Spawn::create(ScaleTo::create(0.125f, 0.0), FadeOut::create(0.125f), nullptr),
 						RemoveSelf::create(),
 						nullptr
 					));
 					blockSprite[k][i]->runAction(Sequence::create(
 						DelayTime::create(0.125f),
-						MoveTo::create(0.125f, convertBlockCoordToGameCoord(Vec2(BLOCK_HORIZONTAL - 1, k))),
+						MoveTo::create(0.0f, convertBlockCoordToGameCoord(Vec2(BLOCK_HORIZONTAL - 1, k))),
+						DelayTime::create(0.125f),
+						//CallFunc::create([=]() {destroyBlock(k, i); }),
 						nullptr
 					));
+					
 				}
 			}
 		}
-
+		
 	}
 }
 
 void SceneIngame::numBlockTomainBlock(int x, int y)
 {
-	blockSprite[y][x] = nullptr;
+	//blockSprite[y][x] = nullptr;
 	setBlockData(x, y, 0);
 	setBlockSprite(x,y,blockSpr);
+	
 }
 
 bool SceneIngame::MousePosition(Vec2 p)
@@ -185,6 +186,17 @@ int SceneIngame::findEqualTypeBlockXIndex(int x, int y)
 int SceneIngame::findEqualTypeBlockYIndex(int x, int y)
 {
 	return 0;
+}
+
+Vec2 SceneIngame::checkNoneMainBlock()
+{
+	//Vec2 retVec = Vec2(0,0);
+	
+	
+
+	//return Vec2(-1,-1);
+	
+	return Vec2();
 }
 
 

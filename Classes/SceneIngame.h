@@ -38,6 +38,7 @@ private:
 	bool MousePosition(Vec2 p); //마우스 이동 체크
 	int findEqualTypeBlockXIndex(int x,int y);
 	int findEqualTypeBlockYIndex(int x,int y);
+	Vec2 checkNoneMainBlock();
 
 public:
 	static SceneIngame* create();
