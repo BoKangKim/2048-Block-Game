@@ -15,6 +15,9 @@ private:
 
 	Sprite* blockSpr = nullptr; // 메인 블록
 	Sprite* twoblockSpr = nullptr; // 2블록
+	Vec2 judgeStack[128];
+	int judgeStackCount = 0;
+	int judgeData[BLOCK_VERTICAL][BLOCK_HORIZONTAL];
 
 	void toDo();
 	int blockNumType[11]; // 블록 타입 11개
@@ -40,6 +43,12 @@ private:
 	int findEqualTypeBlockYIndex(int x,int y);
 	Vec2 checkNoneMainBlock();
 
+	void stackPush(const Vec2& value);
+	const Vec2& stackPop();
+	void stackEmpty();
+	bool stackFind(const Vec2& value);
+	
+
 public:
 	static SceneIngame* create();
 	virtual bool init() override;
@@ -52,7 +61,7 @@ public:
 
 	bool onTouchBegan(Touch* t, Event* e);
 	bool onTouchMoved(Touch* t, Event* e);
-	void onTouchEnded(Touch* t, Event* e);
+	bool onTouchEnded(Touch* t, Event* e);
 
 	void alignBlockSprite();
 };
