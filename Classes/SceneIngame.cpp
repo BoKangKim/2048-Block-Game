@@ -2,13 +2,11 @@
 #include "SceneIngame.h"
 #include "Environment.h"
 
-
-void SceneIngame::toDo()
-{
-	//¸¶¿ì½º À§Ä¡ ÆÇ´Ü ÈÄ ºí·Ï ¿òÁ÷ÀÌ±â
-	//MoveTo ¿¡·¯ Àâ±â
-	//°°Àº ºí·Ï ´Ù¸¥ ºí·Ï Ãæµ¹ ÆÇ´Ü
-}
+/**Todo
+ë§ˆìš°ìŠ¤ ìœ„ì¹˜ íŒë‹¨ í›„ ë¸”ë¡ ì›€ì§ì´ê¸°
+/MoveTo ì—ëŸ¬ ì¡ê¸°
+ê°™ì€ ë¸”ë¡ ë‹¤ë¥¸ ë¸”ë¡ ì¶©ëŒ íŒë‹¨
+*/
 
 Vec2 SceneIngame::convertGameCoordToBlockCoord(const Vec2& gameCoord)
 {
