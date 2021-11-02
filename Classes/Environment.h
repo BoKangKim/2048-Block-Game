@@ -18,6 +18,8 @@ enum class MouseMove {
 	STOP
 };
 
+#define SWAP(TYPE, A, B){TYPE t = A; A = B; B = t;}
+
 // 블록의 기본 설정들
 #define BLOCK_HORIZONTAL 6
 #define BLOCK_VERTICAL 6

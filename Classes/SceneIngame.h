@@ -41,6 +41,7 @@ private:
 	bool MousePosition(Vec2 p); //마우스 이동 체크
 	int findEqualTypeBlockXIndex(int x,int y);
 	int findEqualTypeBlockYIndex(int x,int y);
+	int findNotMainBlockXIndex(int x,int y);
 	Vec2 checkNoneMainBlock();
 
 	void stackPush(const Vec2& value);
@@ -60,7 +61,7 @@ public:
 	void destroyGame();
 
 	bool onTouchBegan(Touch* t, Event* e);
-	bool onTouchMoved(Touch* t, Event* e);
+	void onTouchMoved(Touch* t, Event* e);
 	bool onTouchEnded(Touch* t, Event* e);
 
 	void alignBlockSprite();

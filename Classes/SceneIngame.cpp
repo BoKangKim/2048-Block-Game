@@ -2,13 +2,10 @@
 #include "SceneIngame.h"
 #include "Environment.h"
 
-
-void SceneIngame::toDo()
-{
-	//마우스 위치 판단 후 블록 움직이기
-	//MoveTo 에러 잡기
-	//같은 블록 다른 블록 충돌 판단
-}
+/*
+	같은 블록, 다른 블록 충돌 처리
+	Finish Game 구현
+*/
 
 Vec2 SceneIngame::convertGameCoordToBlockCoord(const Vec2& gameCoord)
 {
@@ -58,7 +55,6 @@ void SceneIngame::createBlock(int x, int y, int type)
 	{
 		setBlockData(x,y,type);
 		setBlockSprite(x,y,twoblockSpr);
-		stackPush(Vec2(x,y));
 	}
 }
 
@@ -125,11 +121,57 @@ void SceneIngame::setStartRandomNum()
 void SceneIngame::movedBlocks()
 {
 //	Vec2 chVec = Vec2(0,0);
-
 	if (mousemove == MouseMove::RIGHT)
 	{
 		mousemove = MouseMove::STOP;
-		
+		int equal_x = 0;
+		int not_mainBlock_x = 0;
+		for (int i = 0 ; i < BLOCK_HORIZONTAL; i++)
+		{
+			for(int j = 0; j <BLOCK_VERTICAL; j++)
+			{
+				if(getBlockData(i,j) != 0)
+				{
+
+					equal_x = findEqualTypeBlockXIndex(i, j);
+					not_mainBlock_x = findNotMainBlockXIndex(i,j);
+					if (equal_x != -1)
+					{
+
+					}
+					else if(equal_x == -1 && not_mainBlock_x == -1)
+					{
+						if (getBlockData(BLOCK_HORIZONTAL - 1, j) == 0)
+						{
+							blockSprite[j][BLOCK_HORIZONTAL - 1]->runAction(Sequence::create(
+								RemoveSelf::create(),
+								nullptr
+							));
+							
+						}
+
+						blockSprite[j][i] ->runAction(MoveTo::create(0, convertBlockCoordToGameCoord(Vec2(BLOCK_HORIZONTAL -1 ,j))));
+						setBlockData(BLOCK_HORIZONTAL - 1, j,0);
+						setBlockSprite(BLOCK_HORIZONTAL - 1, j, twoblockSpr);
+
+						if(i != BLOCK_HORIZONTAL - 1)
+						{
+							blockSprite[j][i] = nullptr;
+							blockData[j][i] = 0;
+							createBlock(i, j, 0);
+							auto s = getBlockSprite(i, j);
+							if (s != nullptr) s->setPosition(convertBlockCoordToGameCoord(Vec2(i, j)));
+						}
+						
+						
+					}
+					else if(equal_x == -1 && not_mainBlock_x != -1)
+					{
+
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -147,21 +189,25 @@ bool SceneIngame::MousePosition(Vec2 p)
 		mousemove = MouseMove::LEFT;
 	else if(mouseTouch.y < p.y)
 		mousemove = MouseMove::TOP;
-	else if(mouseTouch.y < p.y)
+	else if(mouseTouch.y > p.y)
 		mousemove = MouseMove::BOTTOM;
 	else
-	{
 		mousemove = MouseMove::STOP;
-		return false;
-	}
 
 	return true;
 }
 
 int SceneIngame::findEqualTypeBlockXIndex(int x, int y)
 {
-	
-	return 0;
+	for (int i = x + 1; i < BLOCK_HORIZONTAL; i++) 
+	{
+		if (getBlockData(x,y) == getBlockData(i,y))
+		{
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 int SceneIngame::findEqualTypeBlockYIndex(int x, int y)
@@ -169,16 +215,25 @@ int SceneIngame::findEqualTypeBlockYIndex(int x, int y)
 	return 0;
 }
 
+int SceneIngame::findNotMainBlockXIndex(int x, int y)
+{
+	for (int i = x + 1; i < BLOCK_HORIZONTAL; i++)
+	{
+		if (getBlockData(i, y) != 0)
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 Vec2 SceneIngame::checkNoneMainBlock()
 {
-	//Vec2 retVec = Vec2(0,0);
-	
-	
-
-	//return Vec2(-1,-1);
 	
 	return Vec2();
 }
+
 
 void SceneIngame::stackPush(const Vec2& value)
 {
@@ -304,23 +359,16 @@ bool SceneIngame::onTouchBegan(Touch* t, Event* e)
 	return true;
 }
 
-bool SceneIngame::onTouchMoved(Touch* t, Event* e)
+void SceneIngame::onTouchMoved(Touch* t, Event* e)
 {
-	bool check = false;
-	Vec2 p = convertGameCoordToBlockCoord(t->getLocation());
-	
-	CCLOG("%f %f move", p.x, p.y);
-	return false; 
-
-	
-	//SceneIngame::movedBlocks(); return true;
-	
-	
 }
 
 bool SceneIngame::onTouchEnded(Touch* t, Event* e)
 {
 	Vec2 p = convertGameCoordToBlockCoord(t->getLocation());
+	SceneIngame::MousePosition(p);
+	CCLOG("%d position",mousemove);
+	SceneIngame::movedBlocks();
 	CCLOG("%f %f end", p.x, p.y);
 	return true;
 }
