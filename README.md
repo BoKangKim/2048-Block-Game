@@ -1,2 +1,1 @@
-# 2048pj
-MyFirstGamePj
+# 2048 Block Game
