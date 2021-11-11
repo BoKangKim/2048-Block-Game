@@ -3,7 +3,8 @@
 
 #include "stdafx.h"
 #include "Environment.h"
-#include <String.h>
+#include <string>
+#include "LayerIngameUI.h"
 
 class SceneIngame : public Scene {
 private:
@@ -19,12 +20,13 @@ private:
 	int judgeStackCount = 0;
 	int judgeData[BLOCK_VERTICAL][BLOCK_HORIZONTAL];
 
-	void toDo();
+	Sprite* blockTypeSpr[12];
 	int blockNumType[11]; // 블록 타입 11개
-	int randX1; // 시작 할 때 첫번째 2의 x 좌표
-	int randY1; // 시작 할 때 첫번째 2의 y 좌표
-	int randX2; // 시작 할 때 두번째 2의 x 좌표
-	int randY2; // 시작 할 때 두번째 2의 y 좌표
+	int randX1;
+	int randY1;
+	int randX2;
+	int randY2; 
+
 
 	Vec2 convertGameCoordToBlockCoord(const Vec2& gameCoord); 
 	Vec2 convertBlockCoordToGameCoord(const Vec2& blockCoord);
@@ -38,10 +40,12 @@ private:
 	void setStartRandomNum(); //시작할 때 랜덤한 곳에 생성되는 2 두개 위치 초기화
 	void movedBlocks(); // 드래그로 블록 이동
 	void numBlockTomainBlock(int x,int y); // 이동시킨 후 원래 2가 있던 위치를 메인 블록으로 바꾸는 함수
+	void setRandTwoBlockXY();
 	bool MousePosition(Vec2 p); //마우스 이동 체크
 	int findEqualTypeBlockXIndex(int x,int y);
 	int findEqualTypeBlockYIndex(int x,int y);
 	int findNotMainBlockXIndex(int x,int y);
+	int findNotMainBlockYIndex(int x, int y);
 	Vec2 checkNoneMainBlock();
 
 	void stackPush(const Vec2& value);
@@ -49,7 +53,7 @@ private:
 	void stackEmpty();
 	bool stackFind(const Vec2& value);
 	
-
+	LayerIngameUI* ui;
 public:
 	static SceneIngame* create();
 	virtual bool init() override;
@@ -65,6 +69,11 @@ public:
 	bool onTouchEnded(Touch* t, Event* e);
 
 	void alignBlockSprite();
+
+	void startGame();
+	void pauseGame();
+	void winGame();
+	void loseGame();
 };
 
 #endif // !__SCENEINGAME_H__
